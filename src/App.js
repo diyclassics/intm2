@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Box, Container, Grid, List, ListItem, Typography, Button } from '@mui/material';
+import { Pagination } from '@mui/lab';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { createControlComponent } from '@react-leaflet/core';
 import { Control } from 'leaflet';
-import { Box, Container, Grid, List, ListItem, Typography, Button } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -19,16 +20,6 @@ let DefaultIcon = L.icon({
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
-
-const Books = ({ books }) => (
-    <List>
-        {books.map((book, index) => (
-            <ListItem key={index}>
-                <Typography variant="body1">{book.title} {book.imprint} [{book.callno}]</Typography>
-            </ListItem>
-        ))}
-    </List>
-);
 
 const useCreateHomeControl = (map) => {
     return useCallback(() => {
@@ -59,17 +50,56 @@ const useCreateHomeControl = (map) => {
     }, [map]);
 };
 
+const Books = ({ books, onBookClick }) => {
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 10;
+
+    const handleChange = (event, value) => {
+        setPage(value);
+    };
+
+    const displayBooks = books.slice(
+        (page - 1) * itemsPerPage,
+        page * itemsPerPage
+    );
+
+    return (
+        <>
+            <Typography variant="subtitle1" fontStyle="italic">
+                Displaying {displayBooks.length} of {books.length} books for current month
+            </Typography>
+            <List>
+                {displayBooks.map((book, index) => (
+                    <ListItem
+                        key={index}
+                        button
+                        onClick={() => onBookClick((page - 1) * itemsPerPage + index)}
+                    >
+                        <Typography variant="body1">
+                            {book.title} {book.imprint} [{book.callno}]
+                        </Typography>
+                    </ListItem>
+                ))}
+            </List>
+            <Pagination
+                count={Math.ceil(books.length / itemsPerPage)}
+                page={page}
+                onChange={handleChange}
+                color="primary"
+                size="large"
+            />
+        </>
+    );
+};
 
 
-
-
-const BookMap = ({ books }) => {
+const BookMap = ({ books, selectedMarker, setSelectedMarker }) => {
     const map = useMap();
     const createHomeControl = useCreateHomeControl(map);
     const HomeControl = createControlComponent(createHomeControl);
 
     const handleMarkerClick = (lat, lng) => {
-        map.flyTo([lat, lng], map.getZoom());
+        map.flyTo([lat, lng], 6);
     };
 
     const handleLinkClick = (url, e) => {
@@ -77,6 +107,12 @@ const BookMap = ({ books }) => {
         e.stopPropagation();
         window.open(url, "_blank", "noopener,noreferrer");
     };
+
+    useEffect(() => {
+        if (selectedMarker) {
+            map.flyTo([selectedMarker.lat, selectedMarker.lng], 6);
+        }
+    }, [selectedMarker, map]);
 
     return (
         <>
@@ -86,10 +122,13 @@ const BookMap = ({ books }) => {
                     key={index}
                     position={[book.lat, book.lng]}
                     eventHandlers={{
-                        click: () => handleMarkerClick(book.lat, book.lng),
+                        click: () => {
+                            setSelectedMarker(book);
+                            handleMarkerClick(book.lat, book.lng);
+                        },
                     }}
                 >
-                    <Popup>
+                    <Popup autoPan={false} open={selectedMarker && selectedMarker.lat === book.lat && selectedMarker.lng === book.lng}>
                         {book.title}
                         <br />
                         {book.callno}
@@ -112,8 +151,16 @@ const BookMap = ({ books }) => {
 const App = () => {
     const [books, setBooks] = useState([]);
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [selectedMarker, setSelectedMarker] = useState(null);
+    const mapRef = useRef(null);
     const defaultCenter = { lat: 37.58, lng: 58.20 };
     const defaultZoom = 3;
+
+    const handleBookClick = (index) => {
+        setSelectedMarker(books[index]);
+    };
+
+
 
     useEffect(() => {
         const filteredBooks = allBooks.filter((book) => {
@@ -146,6 +193,8 @@ const App = () => {
         });
     };
 
+
+
     return (
         <Container maxWidth="lg">
             <Box my={4}>
@@ -160,12 +209,15 @@ const App = () => {
                                 center={defaultCenter}
                                 zoom={defaultZoom}
                                 style={{ width: '90%', height: '400px', margin: 'auto' }}
+                                whenCreated={(map) => (mapRef.current = map)}
                             >
                                 <TileLayer
                                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 />
-                                <BookMap books={books} />
+                                <BookMap books={books} selectedMarker={selectedMarker} setSelectedMarker={setSelectedMarker} />
+
+
                             </MapContainer>
                         </Box>
                     </Grid>
@@ -178,7 +230,7 @@ const App = () => {
                         </Button>
                     </Grid>
                     <Grid item xs={12}>
-                        <Books books={books} />
+                        <Books books={books} onBookClick={handleBookClick} />
                     </Grid>
                 </Grid>
             </Box>
