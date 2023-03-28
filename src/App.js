@@ -68,6 +68,10 @@ const BookMap = ({ books }) => {
     const createHomeControl = useCreateHomeControl(map);
     const HomeControl = createControlComponent(createHomeControl);
 
+    const handleMarkerClick = (lat, lng) => {
+        map.flyTo([lat, lng], map.getZoom());
+    };
+
     const handleLinkClick = (url, e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -78,7 +82,13 @@ const BookMap = ({ books }) => {
         <>
             <HomeControl />
             {books.map((book, index) => (
-                <Marker key={index} position={[book.lat, book.lng]}>
+                <Marker
+                    key={index}
+                    position={[book.lat, book.lng]}
+                    eventHandlers={{
+                        click: () => handleMarkerClick(book.lat, book.lng),
+                    }}
+                >
                     <Popup>
                         {book.title}
                         <br />
