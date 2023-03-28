@@ -58,6 +58,10 @@ const Books = ({ books, onBookClick }) => {
         setPage(value);
     };
 
+    useEffect(() => {
+        setPage(1);
+    }, [books]);
+
     const displayBooks = books.slice(
         (page - 1) * itemsPerPage,
         page * itemsPerPage
@@ -160,8 +164,6 @@ const App = () => {
         setSelectedMarker(books[index]);
     };
 
-
-
     useEffect(() => {
         const filteredBooks = allBooks.filter((book) => {
             const bookDate = new Date(book.date);
@@ -192,7 +194,6 @@ const App = () => {
             return newDate;
         });
     };
-
 
 
     return (
@@ -230,7 +231,10 @@ const App = () => {
                         </Button>
                     </Grid>
                     <Grid item xs={12}>
-                        <Books books={books} onBookClick={handleBookClick} />
+                        <Books
+                            books={books}
+                            onBookClick={handleBookClick}
+                        />
                     </Grid>
                 </Grid>
             </Box>
