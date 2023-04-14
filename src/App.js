@@ -154,7 +154,14 @@ const BookMap = ({ books, selectedMarker, setSelectedMarker }) => {
 
 const App = () => {
     const [books, setBooks] = useState([]);
-    const [currentDate, setCurrentDate] = useState(new Date());
+
+    const [currentDate, setCurrentDate] = useState(() => {
+        const initialDate = new Date();
+        initialDate.setMonth(initialDate.getMonth() - 1);
+        return initialDate;
+    });
+
+
     const [selectedMarker, setSelectedMarker] = useState(null);
     const mapRef = useRef(null);
     const defaultCenter = { lat: 37.58, lng: 58.20 };
