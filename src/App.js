@@ -176,7 +176,7 @@ const App = () => {
             const bookDate = new Date(book.date);
             return (
                 bookDate.getFullYear() === currentDate.getFullYear() &&
-                bookDate.getMonth() === currentDate.getMonth() - 1
+                bookDate.getMonth() === currentDate.getMonth()
             );
         });
 
