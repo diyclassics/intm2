@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Box, Container, Grid, List, ListItem, Typography, Button } from '@mui/material';
-import { Pagination } from '@mui/material';
+import Pagination from '@mui/material/Pagination';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { createControlComponent } from '@react-leaflet/core';
 import { Control } from 'leaflet';
@@ -137,6 +137,8 @@ const BookMap = ({ books, selectedMarker, setSelectedMarker }) => {
                         <br />
                         {book.callno}
                         <br />
+                        Coord: {book.lat.toFixed(4)}, {book.lng.toFixed(4)}
+                        <br />
                         <a
                             href={book.bobcat_url}
                             onClick={(e) => handleLinkClick(book.bobcat_url, e)}
@@ -157,8 +159,7 @@ const App = () => {
 
     const [currentDate, setCurrentDate] = useState(() => {
         const initialDate = new Date();
-        initialDate.setMonth(initialDate.getMonth() - 1, 1);
-        console.log(initialDate)
+        initialDate.setMonth(initialDate.getMonth() - 1);
         return initialDate;
     });
 
@@ -175,6 +176,7 @@ const App = () => {
     useEffect(() => {
         const filteredBooks = allBooks.filter((book) => {
             const bookDate = new Date(book.date);
+            console.log('book', book, 'bookDate', bookDate, 'currentDate', currentDate)
             return (
                 bookDate.getFullYear() === currentDate.getFullYear() &&
                 bookDate.getMonth() === currentDate.getMonth()
@@ -190,7 +192,8 @@ const App = () => {
     const handlePreviousMonth = () => {
         setCurrentDate((prevDate) => {
             const newDate = new Date(prevDate);
-            newDate.setMonth(newDate.getMonth() - 1);
+            newDate.setMonth(newDate.getMonth() - 1, 1);
+            console.log('New Date:', newDate)
             return newDate;
         });
     };
@@ -198,7 +201,8 @@ const App = () => {
     const handleNextMonth = () => {
         setCurrentDate((prevDate) => {
             const newDate = new Date(prevDate);
-            newDate.setMonth(newDate.getMonth() + 1);
+            newDate.setMonth(newDate.getMonth() + 1, 1);
+            console.log('New Date:', newDate)
             return newDate;
         });
     };
