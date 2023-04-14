@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Box, Container, Grid, List, ListItem, Typography, Button } from '@mui/material';
-import { Pagination } from '@mui/lab';
+import { Pagination } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { createControlComponent } from '@react-leaflet/core';
 import { Control } from 'leaflet';
@@ -157,7 +157,8 @@ const App = () => {
 
     const [currentDate, setCurrentDate] = useState(() => {
         const initialDate = new Date();
-        initialDate.setMonth(initialDate.getMonth() - 1);
+        initialDate.setMonth(initialDate.getMonth() - 1, 1);
+        console.log(initialDate)
         return initialDate;
     });
 
