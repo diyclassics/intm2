@@ -23,7 +23,7 @@ librarian CSV/JSON → nt-data ingest → acquisitions.json → nt-classify → 
                                          nt-map / nt-website / nt-recommend
 ```
 
-Raw librarian exports are committed verbatim to `packages/nt-data/data/exports/` as an audit trail. The ingest script transforms them into a Zod-validated `acquisitions.json`. Nothing mutates records after ingest — enrichment (classifications, place resolution) sits beside them in separate files keyed by record id.
+Raw librarian shelflist exports land in `packages/nt-data/data/exports/` **locally only** — that directory is gitignored. The ingest script transforms them into a Zod-validated `acquisitions.json`, which *is* committed (that's the derivative the apps consume). Nothing mutates records after ingest — enrichment (classifications, place resolution) sits beside them in separate files keyed by record id.
 
 ## Geographic convention
 
@@ -36,7 +36,7 @@ Raw librarian exports are committed verbatim to `packages/nt-data/data/exports/`
 
 - **TypeScript everywhere except nt-classify** (Python 3.12 + sklearn). Python stays scoped to one package.
 - **Zod is the single source of truth** for record shapes. Import types from `@nt/data`; don't redeclare.
-- **Raw data is committed.** Librarian exports, Pleiades subsets, classification outputs — all in git. Reproducible builds matter more than repo size at this scale.
+- **Derivatives are committed; raw shelflists are not.** `acquisitions.json`, Pleiades gazetteer subset, and (post-launch) classification outputs live in git. Librarian shelflist exports stay local — gitignored under `packages/nt-data/data/exports/`. The librarian's system is the source of truth for the raw data.
 - **No backend at launch.** All deliverables are static. When per-scholar personalization arrives, reassess.
 - **Trunk-based.** Short-lived branches, PRs with CI gates, main always shippable.
 

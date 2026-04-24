@@ -20,3 +20,9 @@ __pycache__/
 # Editor
 .vscode/settings.json
 .idea/
+
+# Librarian shelflist exports — local only, never committed.
+# The built acquisitions.json (derivative) is committed; raw exports are not.
+packages/nt-data/data/exports/*
+!packages/nt-data/data/exports/.gitkeep
+!packages/nt-data/data/exports/README.md

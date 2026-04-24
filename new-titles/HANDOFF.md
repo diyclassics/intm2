@@ -61,7 +61,7 @@ Branch: `claude/project-restart-planning-h2kdJ` in `diyclassics/intm2` (sandbox 
 
 ## Three open items (what I need from you)
 
-1. **Librarian sample export** → drop into `packages/nt-data/data/exports/sample.csv` (or `.json`). I'll wire real column mapping in `ingest.ts`.
+1. **Librarian sample export** → drop into `packages/nt-data/data/exports/` locally. That directory is **gitignored** — shelflists stay off git. I'll wire real column mapping in `ingest.ts`; only the built `acquisitions.json` gets committed.
 2. **Six region names** → replace the `region-1..6` placeholders in `packages/nt-classify/src/nt_classify/regions.py`.
 3. **Prior nt-website source** → share the repo/path. I'll inventory and port what's worth keeping when `nt-website` work starts post-launch.
 
