@@ -1,0 +1,26 @@
+{
+  "name": "@nt/data",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts",
+    "./acquisitions.json": "./data/acquisitions.json"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit",
+    "validate": "tsx src/validate.ts",
+    "ingest": "tsx src/ingest.ts",
+    "refresh-gazetteer": "tsx src/refresh-gazetteer.ts",
+    "test": "echo 'no tests yet' && exit 0"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
